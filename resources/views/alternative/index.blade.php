@@ -84,18 +84,25 @@
                                                     @endif
                                                     </span>
                                                 </td>
+                                                <input type="hidden" name="periode_id" value="{{ $periode_id }}">
                                                 <td>{{ $dokumen ? $dokumen->dokumen : 'N/A' }}</td>
                                                 <td>
-                                                    <button class="btn btn-primary btn-sm edit-btn" data-toggle="modal"
-                                                        data-target="#editModal" data-id="{{ $alternative->id }}"
-                                                        data-status="{{ $alternative->status }}">Edit</button>
-                                                    <form action="" method="POST" style="display: inline;">
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                        data-toggle="modal" data-target="#editStatusModal"
+                                                        data-alternative-id="{{ $alternative->alternative_id }}"
+                                                        data-status="{{ $score->status }}">
+                                                        Edit
+                                                    </button>
+                                                    <form
+                                                        action="{{ route('alternatives.destroy', ['alternative' => $alternative->alternative_id]) }}"
+                                                        method="POST" style="display: inline;">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm"
                                                             onclick="return confirm('Apakah Anda yakin ingin menghapus periode ini?')">Hapus</button>
                                                     </form>
                                                 </td>
+
                                             </tr>
                                             <!-- Modal -->
                                             <div class="modal fade" id="editModal{{ $score->id }}" tabindex="-1"
@@ -111,33 +118,7 @@
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
                                                         </div>
-                                                        <form method="POST"
-                                                            action="{{ route('alternativescores.updateStatus', $score->id) }}">
-                                                            @csrf
-                                                            <div class="modal-body">
-                                                                <div class="form-group">
-                                                                    <label for="status">Status</label>
-                                                                    <select class="form-control" id="status"
-                                                                        name="status">
-                                                                        <option value="pending"
-                                                                            {{ $score->status == 'pending' ? 'selected' : '' }}>
-                                                                            Pending</option>
-                                                                        <option value="terverifikasi"
-                                                                            {{ $score->status == 'terverifikasi' ? 'selected' : '' }}>
-                                                                            Terverifikasi</option>
-                                                                        <option value="ditolak"
-                                                                            {{ $score->status == 'ditolak' ? 'selected' : '' }}>
-                                                                            Ditolak</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary"
-                                                                    data-dismiss="modal">Close</button>
-                                                                <button type="submit" class="btn btn-primary">Save
-                                                                    changes</button>
-                                                            </div>
-                                                        </form>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -159,21 +140,23 @@
     </div>
     <!-- /.content-wrapper -->
     <!-- Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    <div class="modal fade" id="editStatusModal" tabindex="-1" role="dialog" aria-labelledby="editStatusModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Status</h5>
+                    <h5 class="modal-title" id="editStatusModalLabel">Edit Status</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm" method="POST" action="{{ url('') }}">
+                    <form id="editForm" method="POST"
+                        action="{{ route('alternatives.updateMultiple', ['alternative' => $alternative->alternative_id, 'periode_id' => $periode_id]) }}">
                         @csrf
-                        <!-- <input type="hidden" name="_method" value="PATCH"> --> <!-- Hapus atau komen baris ini -->
-                        <input type="hidden" name="score_id" id="score_id">
+                        @method('PATCH')
+                        <input type="hidden" name="alternative_id" id="alternative_id">
+                        <input type="hidden" name="periode_id" value="{{ $periode_id }}">
 
                         <!-- Dropdown untuk status -->
                         <div class="form-group">
@@ -195,8 +178,16 @@
 
 @section('script')
     <script>
-        $(function() {
-            $('[data-toggle="tooltip"]').tooltip();
+        $(document).ready(function() {
+            $('#editStatusModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var alternativeId = button.data('alternative-id');
+                var status = button.data('status');
+
+                var modal = $(this);
+                modal.find('#alternative_id').val(alternativeId);
+                modal.find('#status').val(status);
+            });
 
             $('#mytable').DataTable({
                 "paging": true,
@@ -207,7 +198,6 @@
                 "autoWidth": false,
                 "responsive": true,
             });
-
         });
     </script>
 @endsection

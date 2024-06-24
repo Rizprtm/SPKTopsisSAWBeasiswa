@@ -72,7 +72,7 @@ class AlternativeController extends Controller
         ->get();
         $criteriaweights = CriteriaWeight::all();
 
-        return view('alternative.index', compact('criteriaweights','co_admin','alternatives', 'scores'))->with('i', 1);
+        return view('alternative.index', compact('periode_id','criteriaweights','co_admin','alternatives', 'scores'))->with('i', 1);
     
     }
     public function view()
@@ -256,10 +256,28 @@ class AlternativeController extends Controller
             $score->status = $request->input('status');
             $score->save();
 
-            return redirect()->route('alternatives.index')->with('success', 'Status updated successfully');
+            return redirect()->route('alternative.index')->with('success', 'Status updated successfully');
         } else {
-            return redirect()->route('alternatives.index')->with('error', 'AlternativeScore not found');
+            return redirect()->route('alternative.index')->with('error', 'AlternativeScore not found');
         }
+    }
+    public function updateMultiple(Request $request, $alternative)
+    {
+        // Validasi input
+        $request->validate([
+            'status' => 'required|string|in:pending,terverifikasi,ditolak',
+        ]);
+
+        // Update status dari semua score yang bersangkutan
+        $alternativeId = $request->input('alternative_id');
+        $scores = AlternativeScore::where('alternative_id', $alternativeId)->get();
+        foreach ($scores as $score) {
+            $score->status = $request->status;
+            $score->save();
+        }
+
+        return redirect()->route('alternative.index', ['periode_id' => $request->periode_id])
+            ->with('success', 'Status updated successfully');
     }
     
 }

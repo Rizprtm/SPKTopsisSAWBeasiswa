@@ -71,8 +71,9 @@ Route::delete('periode_beasiswa/delete/{periode_id}', [HomeController::class, 'p
 
 Route::get('admin/alternative', [AlternativeController::class, 'view']);
 Route::get('admin/{periode_id}/alternative',[AlternativeController::class, 'index'])->name('alternative.index');
-Route::post('/update-alternative-status/{id}', 'AlternativeController@updateStatus')->name('update.alternative.status');
-Route::post('/alternativescores/{id}/update-status', [AlternativeScoreController::class, 'updateStatus'])->name('alternativescores.updateStatus');
+Route::post('admin/{periode_id}/alternative/{alternative}/update', [AlternativeController::class, 'updateStatus'])->name('update.alternative.status');
+Route::post('/alternativescores/{id}/update-status', [AlternativeController::class, 'updateStatus'])->name('alternativescores.updateStatus');
+Route::patch('admin/alternative/{alternative}/update-multiple', [AlternativeController::class, 'updateMultiple'])->name('alternatives.updateMultiple');
 
 ////////////////////////////////////////// TOPSIS ////////////////////////////////////////////////
 Route::get('admin/decision', [DecisionController::class, 'view']);
