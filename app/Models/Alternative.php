@@ -26,7 +26,7 @@ class Alternative extends Model
     ];
     public function alternativeScores()
     {
-        return $this->hasMany(AlternativeScore::class, 'alternative_id');
+        return $this->hasMany(AlternativeScore::class, 'alternative_id', 'id');
     }
     public function mahasiswa()
     {

@@ -29,8 +29,8 @@
                         <div class="card card-primary card-outline">
                             <div class="card-body box-profile">
                                 <div class="text-center">
-                                    <img class="profile-user-img img-fluid img-circle"
-                                        src="../../dist/img/user4-128x128.jpg" alt="User profile picture">
+                                    {{-- <img class="profile-user-img img-fluid img-circle"
+                                        src="../../dist/img/user4-128x128.jpg" alt="User profile picture"> --}}
                                 </div>
                                 <?php $mahasiswa; ?><h3 class="profile-username text-center">{{ $mahasiswa->nama }}</h3>
                                 <p class="text-muted text-center">{{ $mahasiswa->userId }}</p>

@@ -85,7 +85,16 @@
                                                     </span>
                                                 </td>
                                                 <input type="hidden" name="periode_id" value="{{ $periode_id }}">
-                                                <td>{{ $dokumen ? $dokumen->dokumen : 'N/A' }}</td>
+                                                <td>
+                                                    @if ($dokumen && $dokumen->dokumen)
+                                                        <button class="btn btn-primary" data-toggle="modal"
+                                                            data-target="#pdfModal"
+                                                            data-dokumen="{{ asset('storage/' . $dokumen->dokumen) }}">View
+                                                            PDF</button>
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     <button type="button" class="btn btn-primary btn-sm"
                                                         data-toggle="modal" data-target="#editStatusModal"
@@ -174,6 +183,23 @@
             </div>
         </div>
     </div>
+    <!-- Modal for viewing PDF -->
+    <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pdfModalLabel">Dokumen PDF</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="pdfFrame" src="" width="100%" height="600px"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
@@ -187,6 +213,13 @@
                 var modal = $(this);
                 modal.find('#alternative_id').val(alternativeId);
                 modal.find('#status').val(status);
+            });
+
+            $('#pdfModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var dokumen = button.data('dokumen');
+                var modal = $(this);
+                modal.find('.modal-body #pdfFrame').attr('src', dokumen);
             });
 
             $('#mytable').DataTable({

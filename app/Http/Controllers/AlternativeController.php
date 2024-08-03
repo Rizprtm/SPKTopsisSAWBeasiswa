@@ -153,7 +153,7 @@ class AlternativeController extends Controller
                 $score->criteria_id = $cw->id;
                 $score->rating = $request->input('criteria')[$cw->id];
                 $score->periode_id = $periode_id;
-                $score->status = 'Pending';
+                $score->status = 'pending';
                 if ($request->hasFile('dokumen')) {
                     $file = $request->file('dokumen');
                     $fileName = $file->getClientOriginalName();
@@ -166,7 +166,7 @@ class AlternativeController extends Controller
             }
             
 
-            return redirect()->route('alternatives.create')
+            return redirect()->back()
                 ->with('success', 'Data disimpan permanen.');
             // If the operation was successful, send a success response
             return response()->json(['status' => 'success']);

@@ -30,6 +30,6 @@ class AlternativeScore extends Model
     ];
     public function alternative()
     {
-        return $this->belongsTo(Alternative::class, 'alternative_id');
+        return $this->belongsTo(Alternative::class, 'alternative_id','id');
     }
 }
