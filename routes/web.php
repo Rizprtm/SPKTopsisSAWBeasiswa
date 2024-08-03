@@ -108,7 +108,7 @@ Route::get('co_admin', [HomeController::class, 'dashboard'])->middleware('userAk
 Route::get('/datamhs', [Mahasiswa::class, 'datamhs'])->middleware('userAkses:co_admin');
 
 Route::get('periode_beasiswa/{periode_id}/edit', [HomeController::class, 'periode_edit'])->name('periode.edit');
-Route::put('periode_beasiswa/update', [HomeController::class, 'periode_update'])->name('periode.update');
+Route::put('periode_beasiswa/update/{periode_id}', [HomeController::class, 'periode_update'])->name('periode.update');
 Route::delete('periode_beasiswa/delete/{periode_id}', [HomeController::class, 'periode_destroy'])->name('periode.destroy');
 
 Route::get('formulir', [Mahasiswa::class, 'formulir']);

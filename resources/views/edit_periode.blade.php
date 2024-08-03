@@ -45,9 +45,8 @@
                                         {{ session('success') }}
                                     </div>
                                 @endif
-                                <form id="edit"
-                                    action="{{ url('/periode_beasiswa/update', $dataperiode->periode_id) }}" method="POST"
-                                    enctype="multipart/form-data">
+                                <form id="edit" action="{{ url('periode_beasiswa/update', $dataperiode->periode_id) }}"
+                                    method="POST" enctype="multipart/form-data">
                                     @csrf
                                     @method('PUT')
 
