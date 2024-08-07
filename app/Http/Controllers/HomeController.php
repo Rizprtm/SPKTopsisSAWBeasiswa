@@ -42,11 +42,12 @@ class HomeController extends Controller
 
   
         $totalMahasiswa = M_Mahasiswa::count();
+        $totalPeriode = Periode::count();
         $formulir = AlternativeScore::count();
         $totalformulir = ceil($formulir / 3);
         // $mahasiswa = M_Mahasiswa::where('userId',$userId)->first();
         // $data = M_Mahasiswa::all();
-        return view('dashboard',['data','mahasiswa'=> $mahasiswa, 'totalMahasiswa'=> $totalMahasiswa, 'totalformulir' => $totalformulir, 'co_admin' => $co_admin]);
+        return view('dashboard',['data','mahasiswa'=> $mahasiswa, 'totalMahasiswa'=> $totalMahasiswa, 'totalformulir' => $totalformulir, 'totalPeriode' => $totalPeriode, 'co_admin' => $co_admin]);
     }
     public function periode()
     {

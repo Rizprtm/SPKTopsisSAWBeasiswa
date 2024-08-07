@@ -161,14 +161,14 @@
         </li>
         <li class="nav-header">SAW</li>
 
-        <li class="nav-item">
+        {{-- <li class="nav-item">
             <a href="{{ url('admin/normalizationSAW') }}" class="nav-link">
                 <i class="nav-icon far fa-chart-bar"></i>
                 <p>
                     Normalized Matrix
                 </p>
             </a>
-        </li>
+        </li> --}}
 
         <li class="nav-item">
             <a href="{{ url('admin/rankSAW') }}" class="nav-link">
@@ -180,7 +180,7 @@
         </li>
         <li class="nav-header">TOPSIS</li>
 
-        <li class="nav-item">
+        {{-- <li class="nav-item">
             <a href="{{ url('admin/normalization') }}" class="nav-link">
                 <i class="nav-icon far fa-chart-bar"></i>
                 <p>
@@ -211,7 +211,7 @@
                     Ideal Solution Distance
                 </p>
             </a>
-        </li>
+        </li> --}}
         <li class="nav-item">
             <a href="{{ url('admin/rank') }}" class="nav-link">
                 <i class="nav-icon fas fa-chart-line"></i>

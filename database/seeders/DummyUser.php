@@ -17,13 +17,13 @@ class DummyUser extends Seeder
     {
         $userData = [
             [
-                'userId'=> '2015354054',
+                'userId'=> 'admin',
                 'password' => Hash::make('123'),
                 'role' => 'admin'
 
             ],
             [
-                'userId'=> '2015354056',
+                'userId'=> '2015354001',
                 'password' => Hash::make('123'),
                 'role' => 'mahasiswa'
 
@@ -48,6 +48,42 @@ class DummyUser extends Seeder
             ],
             [
                 'userId'=> '2015354005',
+                'password' => Hash::make('123'),
+                'role' => 'mahasiswa'
+
+            ],
+            [
+                'userId'=> '2015354006',
+                'password' => Hash::make('123'),
+                'role' => 'mahasiswa'
+
+            ],
+            [
+                'userId'=> '2015354007',
+                'password' => Hash::make('123'),
+                'role' => 'mahasiswa'
+
+            ],
+            [
+                'userId'=> '2015354008',
+                'password' => Hash::make('123'),
+                'role' => 'mahasiswa'
+
+            ],
+            [
+                'userId'=> '2015354009',
+                'password' => Hash::make('123'),
+                'role' => 'mahasiswa'
+
+            ],
+            [
+                'userId'=> '2015354010',
+                'password' => Hash::make('123'),
+                'role' => 'mahasiswa'
+
+            ],
+            [
+                'userId'=> '2015354011',
                 'password' => Hash::make('123'),
                 'role' => 'mahasiswa'
 

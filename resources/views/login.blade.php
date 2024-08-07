@@ -28,11 +28,10 @@
                 <div class="featured-image mb-3">
                     <img src="loginbs/images/1.png" class="img-fluid" style="width: 250px;">
                 </div>
-                <p class="text-white fs-2" style="font-family: 'Courier New', Courier, monospace; font-weight: 600;">Be
-                    Verified</p>
+                <p class="text-white fs-2" style="font-family: 'Courier New', Courier, monospace; font-weight: 600;">
+                    Login SPK Beasiswa</p>
                 <small class="text-white text-wrap text-center"
-                    style="width: 17rem;font-family: 'Courier New', Courier, monospace;">Join experienced Designers on
-                    this platform.</small>
+                    style="width: 17rem;font-family: 'Courier New', Courier, monospace;"></small>
             </div>
 
             <!-------------------- ------ Right Box ---------------------------->
@@ -81,7 +80,7 @@
 
                         </div>
                         <div class="row">
-                            <small>lupa password? <a href="#">contact</a></small>
+                            {{-- <small>lupa password? <a href="#">contact</a></small> --}}
                         </div>
                 </div>
             </div>
