@@ -29,7 +29,7 @@
                             <div class="card-body">
                                 <a href="{{ url('rank/pdf', ['periode_id' => $periode_id]) }}"
                                     class="btn btn-secondary buttons-excel buttons-html5" tabindex="0"
-                                    aria-controls="example1" type="button"><span>Excel</span></a>
+                                    aria-controls="example1" type="button"><span>Download</span></a>
                                 <table id="mytable" class="display nowrap table table-striped table-bordered">
                                     <thead>
                                         <tr>
@@ -38,31 +38,25 @@
                                             <th>Nama</th>
                                             <th>Jurusan</th>
                                             <th>Prodi</th>
-
                                             <th>Nilai</th>
 
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @php $rank = 1; @endphp
-                                        @foreach ($selectedAlternatives as $prodi => $group)
-                                            @foreach ($group as $alternative_id => $preference)
-                                                @php
-                                                    $alternative = $alternatives->firstWhere('id', $alternative_id);
-                                                @endphp
-                                                @if ($alternative)
-                                                    <tr>
-                                                        <td>{{ $rank++ }}</td>
-                                                        <td>{{ $alternative->userId }}</td>
-                                                        <td>{{ $alternative->mahasiswa->nama ?? 'N/A' }}</td>
-                                                        <td>{{ $alternative->mahasiswa->jurusan ?? 'N/A' }}</td>
-                                                        <td>{{ $alternative->mahasiswa->prodi ?? 'N/A' }}</td>
-
-
-                                                        <td>{{ number_format($preference, 4) }}</td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
+                                        @foreach ($selectedAlternatives as $selected)
+                                            @php
+                                                $alternative = $selected['alternative'];
+                                                $preference = $selected['preference'];
+                                            @endphp
+                                            <tr>
+                                                <td>{{ $rank++ }}</td>
+                                                <td>{{ $alternative->userId }}</td>
+                                                <td>{{ $alternative->mahasiswa->nama ?? 'N/A' }}</td>
+                                                <td>{{ $alternative->mahasiswa->jurusan ?? 'N/A' }}</td>
+                                                <td>{{ $alternative->mahasiswa->prodi ?? 'N/A' }}</td>
+                                                <td>{{ number_format($preference, 4) }}</td>
+                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>

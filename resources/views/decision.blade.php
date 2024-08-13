@@ -29,7 +29,7 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Nama</th>
+                                            <th>NIM</th>
                                             @foreach ($criteriaweights as $c)
                                                 <th>{{ $c->name }}</th>
                                             @endforeach

@@ -33,9 +33,67 @@ class RankController extends Controller
         $user = Auth::user();
         $userId = $user->userId;
         $co_admin = User::join('admin_jurusan', 'users.userId', '=', 'admin_jurusan.userId')
-        ->where('users.userId', $user->userId)
-        ->select('admin_jurusan.nama')
-        ->first(); 
+            ->where('users.userId', $user->userId)
+            ->select('admin_jurusan.nama')
+            ->first();
+    
+        $periode_id = $request->periode_id;
+        $scores = $this->topsisService->fetchScores($periode_id);
+        $alternatives = $this->topsisService->fetchAlternatives($periode_id);
+        $criteriaweights = CriteriaWeight::all();
+        $normalizedScores = $this->topsisService->normalizeScores($scores, $criteriaweights);
+        $weightedScores = $this->topsisService->weightNormalizedScores($normalizedScores, $criteriaweights);
+        $idealSolutions = $this->topsisService->idealSolutions($weightedScores, $criteriaweights);
+        $distances = $this->topsisService->calculateDistances($weightedScores, $idealSolutions);
+        $preferenceValues = $this->topsisService->calculatePreferenceValues($distances);
+    
+        // Ambil data mahasiswa sekaligus dengan alternatif
+        $alternatives = Alternative::with('mahasiswa')
+            ->whereIn('id', $alternatives->pluck('id'))
+            ->get();
+    
+        // Urutkan semua alternatif berdasarkan preferensi secara keseluruhan
+        $allPreferences = [];
+        foreach ($alternatives as $alternative) {
+            if (isset($preferenceValues[$alternative->id])) {
+                $allPreferences[$alternative->id] = $preferenceValues[$alternative->id];
+            }
+        }
+    
+        arsort($allPreferences); // Urutkan berdasarkan nilai preferensi tertinggi
+    
+        // Tentukan kuota total untuk semua prodi
+        $quota = 100; // Total jumlah alternatif yang diambil
+    
+        $selectedAlternatives = [];
+        $count = 0;
+    
+        foreach ($allPreferences as $alternative_id => $preference) {
+            if ($count >= $quota) break;
+    
+            $alternative = $alternatives->firstWhere('id', $alternative_id);
+            if ($alternative) {
+                $selectedAlternatives[] = [
+                    'alternative' => $alternative,
+                    'preference' => $preference
+                ];
+                $count++;
+            }
+        }
+    
+        return view('rank', compact('co_admin', 'scores', 'selectedAlternatives', 'alternatives', 'periode_id', 'criteriaweights'));
+    }
+    
+
+    public function index2(Request $request)
+    {
+        $user = Auth::user();
+        $userId = $user->userId;
+        $co_admin = User::join('admin_jurusan', 'users.userId', '=', 'admin_jurusan.userId')
+            ->where('users.userId', $user->userId)
+            ->select('admin_jurusan.nama')
+            ->first();
+    
         $periode_id = $request->periode_id;
         $scores = $this->topsisService->fetchScores($periode_id);
         $alternatives = $this->topsisService->fetchAlternatives($periode_id);
@@ -46,35 +104,58 @@ class RankController extends Controller
         $distances = $this->topsisService->calculateDistances($weightedScores, $idealSolutions);
         $preferenceValues = $this->topsisService->calculatePreferenceValues($distances);
         $rankings = $this->topsisService->calculateRanking($preferenceValues);
-            // Ambil data mahasiswa sekaligus dengan alternatif
-            $alternatives = Alternative::with('mahasiswa')
-                ->whereIn('id', $alternatives->pluck('id'))
-                ->get();
-                $groupedAlternatives = $alternatives->groupBy('mahasiswa.prodi');
-                $quota = [
-                    'D-IV Teknologi Rekayasa Perangkat Lunak' => 2,
-                    'D-III Teknik Sipil' => 3,
-                    'D-IV Manajemen Perpajakan' => 1,
-                    // Tentukan kuota untuk setiap prodi
-                ];
-                $selectedAlternatives = [];
-            
-                foreach ($groupedAlternatives as $prodi => $group) {
-                    $groupPreferences = [];
-                    foreach ($group as $alternative) {
-                        if (isset($preferenceValues[$alternative->id])) {
-                            $groupPreferences[$alternative->id] = $preferenceValues[$alternative->id];
-                        }
-                    }
-            
-                    arsort($groupPreferences); // Urutkan berdasarkan nilai preferensi tertinggi
-            
-                    $selectedAlternatives[$prodi] = array_slice($groupPreferences, 0, $quota[$prodi] ?? count($groupPreferences), true);
-                    // dd($alternatives);
-                }
-        return view('rank', compact('co_admin','scores','selectedAlternatives','alternatives','periode_id','preferenceValues', 'criteriaweights'));
     
+        // Ambil data mahasiswa sekaligus dengan alternatif
+        $alternatives = Alternative::with('mahasiswa')
+            ->whereIn('id', $alternatives->pluck('id'))
+            ->get();
+    
+        // Urutkan semua alternatif berdasarkan preferensi secara keseluruhan
+        $allPreferences = [];
+        foreach ($alternatives as $alternative) {
+            if (isset($preferenceValues[$alternative->id])) {
+                $allPreferences[$alternative->id] = $preferenceValues[$alternative->id];
+            }
+        }
+    
+        arsort($allPreferences); // Urutkan berdasarkan nilai preferensi tertinggi
+    
+        // Mengelompokkan alternatif berdasarkan prodi
+        $groupedAlternatives = $alternatives->groupBy('mahasiswa.prodi');
+    
+        $quota = [
+            'D-IV Teknologi Rekayasa Perangkat Lunak' => 2,
+            'D-III Teknik Sipil' => 3,
+            'D-IV Manajemen Perpajakan' => 1,
+            // Tentukan kuota untuk setiap prodi
+        ];
+    
+        $selectedAlternatives = [];
+    
+        // Pilih alternatif sesuai dengan kuota per prodi dari preferensi yang telah diurutkan
+        $countPerProdi = [];
+        foreach ($allPreferences as $alternative_id => $preference) {
+            $alternative = $alternatives->firstWhere('id', $alternative_id);
+            if ($alternative) {
+                $prodi = $alternative->mahasiswa->prodi;
+                if (!isset($countPerProdi[$prodi])) {
+                    $countPerProdi[$prodi] = 0;
+                }
+                if ($countPerProdi[$prodi] < ($quota[$prodi] ?? 0)) {
+                    $selectedAlternatives[] = [
+                        'alternative' => $alternative,
+                        'preference' => $preference
+                    ];
+                    $countPerProdi[$prodi]++;
+                }
+            }
+        }
+    
+        return view('rank', compact('co_admin', 'scores', 'selectedAlternatives', 'alternatives', 'periode_id', 'preferenceValues', 'criteriaweights'));
     }
+    
+    
+    
     public function view()
     {
 
@@ -118,27 +199,20 @@ class RankController extends Controller
         $alternatives = Alternative::with('mahasiswa')
             ->whereIn('id', $alternatives->pluck('id'))
             ->get();
-        $groupedAlternatives = $alternatives->groupBy('mahasiswa.prodi');
-        $quota = [
-            'D-IV Teknologi Rekayasa Perangkat Lunak' => 2,
-            'D-III Teknik Sipil' => 3,
-            'D-IV Manajemen Perpajakan' => 1,
-            // Tentukan kuota untuk setiap prodi
-        ];
-        $selectedAlternatives = [];
     
-        foreach ($groupedAlternatives as $prodi => $group) {
-            $groupPreferences = [];
-            foreach ($group as $alternative) {
-                if (isset($preferenceValues[$alternative->id])) {
-                    $groupPreferences[$alternative->id] = $preferenceValues[$alternative->id];
-                }
+        // Gabungkan alternatif dengan nilai preferensi
+        $alternativePreferences = [];
+        foreach ($alternatives as $alternative) {
+            if (isset($preferenceValues[$alternative->id])) {
+                $alternativePreferences[$alternative->id] = $preferenceValues[$alternative->id];
             }
-    
-            arsort($groupPreferences); // Urutkan berdasarkan nilai preferensi tertinggi
-    
-            $selectedAlternatives[$prodi] = array_slice($groupPreferences, 0, $quota[$prodi] ?? count($groupPreferences), true);
         }
+    
+        // Urutkan alternatif berdasarkan nilai preferensi tertinggi
+        arsort($alternativePreferences);
+    
+        // Pilih alternatif terbaik, misalnya ambil top 10
+        $selectedAlternatives = array_slice($alternativePreferences, 0, 20, true);
     
         $data = [
             'periode_id' => $periode_id,
@@ -153,6 +227,7 @@ class RankController extends Controller
         $pdf = PDF::loadView('rank_pdf', $data)->setOptions(['defaultFont' => 'sans-serif']);
         return $pdf->download('rank_report.pdf');
     }
+    
     
     
 }

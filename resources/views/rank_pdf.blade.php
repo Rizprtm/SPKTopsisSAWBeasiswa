@@ -28,7 +28,7 @@
 
 <body>
     <h1>Ranking Report for Periode {{ $periode_id }}</h1>
-    <p>Admin Jurusan: {{ $co_admin->nama }}</p>
+    {{-- <p>Admin Jurusan: {{ $co_admin->nama }}</p> --}}
     <table>
         <thead>
             <tr>
@@ -42,22 +42,18 @@
         </thead>
         <tbody>
             @php $rank = 1; @endphp
-            @foreach ($selectedAlternatives as $prodi => $group)
-                @foreach ($group as $alternative_id => $preference)
-                    @php
-                        $alternative = $alternatives->firstWhere('id', $alternative_id);
-                    @endphp
-                    @if ($alternative)
-                        <tr>
-                            <td>{{ $rank++ }}</td>
-                            <td>{{ $alternative->userId }}</td>
-                            <td>{{ $alternative->mahasiswa->nama ?? 'N/A' }}</td>
-                            <td>{{ $alternative->mahasiswa->jurusan ?? 'N/A' }}</td>
-                            <td>{{ $alternative->mahasiswa->prodi ?? 'N/A' }}</td>
-                            <td>{{ number_format($preference, 4) }}</td>
-                        </tr>
-                    @endif
-                @endforeach
+            @foreach ($selectedAlternatives as $alternativeId => $preferenceValue)
+                @php
+                    $alternative = $alternatives->firstWhere('id', $alternativeId);
+                @endphp
+                <tr>
+                    <td>{{ $rank++ }}</td>
+                    <td>{{ $alternative->userId }}</td>
+                    <td>{{ $alternative->mahasiswa->nama }}</td>
+                    <td>{{ $alternative->mahasiswa->jurusan }}</td>
+                    <td>{{ $alternative->mahasiswa->prodi }}</td>
+                    <td>{{ $preferenceValue }}</td>
+                </tr>
             @endforeach
         </tbody>
     </table>
